@@ -38,7 +38,7 @@ class _LoginPageState extends State<LoginPage>{
       return [
         RaisedButton(
           onPressed : signIn,
-          child : Text('Sign in'),
+          child : Text('Log in'),
         ),
         FlatButton(
           child : Text('Create an account', style : new TextStyle(fontSize :20.0)),
@@ -81,10 +81,12 @@ class _LoginPageState extends State<LoginPage>{
     }
 
   void moveToRegister(){
+    _formKey.currentState.reset();
     setState(()=>_formType = FormType.register);
   }
 
   void moveToLogin(){
+    _formKey.currentState.reset();
     setState(() => _formType = FormType.login);
   }
 
@@ -95,8 +97,13 @@ class _LoginPageState extends State<LoginPage>{
     if(formState.validate()){
       formState.save();
       try {
-        AuthResult user = await FirebaseAuth.instance.signInWithEmailAndPassword(email : _email,password : _password);
-        Navigator.push(context,MaterialPageRoute(builder:(context)=> Home()));
+        if(_formType == FormType.login){
+          AuthResult user = await FirebaseAuth.instance.signInWithEmailAndPassword(email : _email,password : _password);
+          Navigator.push(context,MaterialPageRoute(builder:(context)=> Home()));
+        }else{
+          AuthResult user = await FirebaseAuth.instance.createUserWithEmailAndPassword(email : _email , password: _password);
+          print('Registered user: ${user}');
+        }
       }catch(e){
         print(e.message);
       }
