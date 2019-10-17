@@ -7,8 +7,14 @@ class LoginPage extends StatefulWidget{
   _LoginPageState createState() => new _LoginPageState();
 }
 
+enum FormType {
+  login,
+  register
+}
+
 class _LoginPageState extends State<LoginPage>{
   String _email, _password;
+  FormType _formType = FormType.login;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -20,38 +26,66 @@ class _LoginPageState extends State<LoginPage>{
       body: Form(
         key : _formKey,
         child: Column (
-          children: <Widget>[
-            TextFormField(
-              validator: (input){
-                if(input.isEmpty){
-                  return 'Please type an email';
-                }
-              },
-              onSaved : (input) => _email = input,
-              decoration : InputDecoration(
-                labelText : "Email",
-              ),
-            ),
-            TextFormField(
-              validator: (input){
-                if(input.length < 6){
-                  return 'Please provide a valid password';
-                }
-              },
-              onSaved : (input) => _password = input,
-              decoration : InputDecoration(
-                labelText : "Password",
-              ),
-              obscureText: true,
-            ),
-            RaisedButton(
-              onPressed : signIn,
-              child : Text('Sign in'),
-            )
-          ],
+          children: buildInput() + buildButton(),
         ),
       ),
     );
+  }
+
+
+  List<Widget> buildButton(){
+    if(_formType == FormType.login){
+      return [
+        RaisedButton(
+          onPressed : signIn,
+          child : Text('Sign in'),
+        ),
+        FlatButton(
+          child : Text('Create an account', style : new TextStyle(fontSize :20.0)),
+          onPressed: moveToRegister,
+        )
+      ];
+    }else{
+      return [
+        RaisedButton(
+          onPressed : signIn,
+          child : Text('Create an account'),
+        ),
+        FlatButton(
+          child : Text('Have an account ? Login', style : new TextStyle(fontSize :20.0)),
+          onPressed: moveToLogin,
+        )
+      ];
+
+    }
+  }
+
+   List<Widget> buildInput(){
+      return [
+        TextFormField(
+          validator: (input) => input.isEmpty ? 'Email can\'t be empty' : null,
+          onSaved : (input) => _email = input,
+          decoration : InputDecoration(
+            labelText : "Email",
+          ),
+        ),
+        TextFormField(
+          validator: (input) => input.length < 6 ? 'Please enter valid password' : null,
+          onSaved : (input) => _password = input,
+          decoration : InputDecoration(
+            labelText : "Password",
+          ),
+          obscureText: true,
+        ),
+      ];
+    }
+
+  void moveToRegister(){
+    setState(()=>_formType = FormType.register);
+  }
+
+  void moveToLogin(){
+    setState(() => _formType = FormType.login);
   }
 
   Future<void> signIn() async {
