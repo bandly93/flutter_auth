@@ -49,7 +49,7 @@ class _LoginPageState extends State<LoginPage>{
       return [
         RaisedButton(
           onPressed : signIn,
-          child : Text('Create an account'),
+          child : Text('Register User'),
         ),
         FlatButton(
           child : Text('Have an account ? Login', style : new TextStyle(fontSize :20.0)),
